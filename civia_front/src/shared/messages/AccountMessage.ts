@@ -1,7 +1,4 @@
 export type AccountMessage =
-  { type: 'CIVIA_GET_SIGNER'; data?: any }
-  | { type: 'CIVIA_GET_SIGNER_RES'; data: any }
-  | { type: 'CIVIA_GET_SIGNER_RJS'; data: any }
 
   | { type: 'CIVIA_GET_GUARDIANSIZE'; data?: any }
   | { type: 'CIVIA_GET_GUARDIANSIZE_RES'; data: any }
