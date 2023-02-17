@@ -34,7 +34,7 @@ export const getAccountInfo = async (accountAddress: string) => {
 };
 
 export const getAccountInfoFromAPI = async (accountAddress: string) => {
-    const response = await axios.post('http://192.168.10.118:5000/app/getUserId',
+    const response = await axios.post('http://101.132.135.175:5000/app/getUserId',
         { account: accountAddress },
         {
             headers: {
@@ -146,7 +146,7 @@ export const getIdsByAddressList = async (addressList: string[]) => {
 };
 
 export const getUserFaucetGas = async (accountAddress: string) => {
-    const response = await axios.post('http://192.168.10.118:5000/app/userFaucetGas',
+    const response = await axios.post('http://101.132.135.175:5000/app/userFaucetGas',
         { account: accountAddress },
         {
             headers: {
