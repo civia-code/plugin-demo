@@ -13,13 +13,14 @@ import { getAllSocalList } from '@src/ui/account/accountSocal.service';
 import { Account } from '@argentx/packages/extension/src/ui/features/accounts/Account';
 import { useSelectedAccount } from '@argentx/packages/extension/src/ui/features/accounts/accounts.state';
 import { getAccountIdentifier } from '@argentx/packages/extension/src/shared/wallet.service';
+import { swrCacheProvider } from '@argentx/packages/extension/src/ui/services/swr';
 
 const StyledBody = styled.div`
     /* min-height:320px;
     margin: 10px 0;
     border-radius: 20px 20px 0 0;
     background:#fff; */
-    padding-top: 8px;
+    padding-top: 24px;
 `;
 
 const StyledTabsCom = styled(TabsCom)`
@@ -41,8 +42,12 @@ const AccountSocalPage: FC<any> = () => {
     const account = useSelectedAccount() as Account;
     const accountIdentifier = account && getAccountIdentifier(account);
 
-    const { data: socalList = { followingData: [], followersData: [] }, isValidating, mutate } = useLocalCache(getAllSocalList, { key: `@"${accountIdentifier}","socalList"`, revalidateOnFocus: false, revalidateOnReconnect: false, refreshInterval: 10e3, dedupingInterval: 10e3 });
-    const { followingData, followersData } = socalList;
+    const { data: socalList = { followingData: [], followersData: [] }, isValidating, mutate } = useLocalCache(() => {
+        return getAllSocalList().then((res) => {
+            return res || swrCacheProvider.get(`@"${accountIdentifier}","socalList"`) || {};
+        });
+    }, { key: `@"${accountIdentifier}","socalList"`, revalidateOnFocus: false, revalidateOnReconnect: false, refreshInterval: 10e3, dedupingInterval: 10e3 });
+    const { followingData = [], followersData = [] } = socalList || {};
 
     return (
         <WindowWrapperCom>
@@ -55,8 +60,6 @@ const AccountSocalPage: FC<any> = () => {
                                     (props: ReactElement) => (
                                         <>
                                             {props}
-                                            {/* <List.Item prefix={<UserCircleOutline />} onClick={handleRegistrAccountInfo} arrow={false}>RegisterSBT</List.Item> */}
-                                            {/* <List.Item prefix={<ScanCodeOutline />} onClick={() => { navigate('/account/socal_recovery'); }} arrow={false}>Socal Recovery</List.Item> */}
                                             <List.Item prefix={<UserAddOutline />} onClick={() => { navigate('/account/secruity_level'); }} arrow={false}>Guardians</List.Item>
                                         </>
                                     )
@@ -81,7 +84,7 @@ const AccountSocalPage: FC<any> = () => {
                                     list={followingData}
                                 /> : (isValidating ? <LoadingCom visible mask={false} /> : <Empty />)
                             ) : (
-                                <StyledList mode='card'>
+                                <StyledList>
                                     {
                                         followersData.length ? <AllUserList
                                             gridType={'list'}
