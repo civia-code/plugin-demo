@@ -27,35 +27,19 @@ export const createSBT = async () => {
 };
 
 export const socalFollow = async (accountAddress: string) => {
-    await sendMessage({ type: 'CIVIA_SOCAL_FOLLOW', data: { accountAddress } } as any);
-    return await waitForMessage('CIVIA_SOCAL_FOLLOW_RES' as any);
+    return null;
 };
 
 export const socalUnFollow = async (accountAddress: string) => {
-    await sendMessage({ type: 'CIVIA_SOCAL_UNFOLLOW', data: { accountAddress } } as any);
-    return await waitForMessage('CIVIA_SOCAL_UNFOLLOW_RES' as any);
+    return null;
 };
 
 export const socalFollowTrans = async (accountAddress: string) => {
-    const res = await proxySendCombinedTransaction({
-        transactions: [{
-            contractAddress: sbtConstractAddress,
-            entrypoint: 'follow',
-            calldata: [accountAddress]
-        }]
-    });
-    return res;
+    return null;
 };
 
 export const socalUnFollowTrans = async (accountAddress: string) => {
-    const res = await proxySendCombinedTransaction({
-        transactions: [{
-            contractAddress: sbtConstractAddress,
-            entrypoint: 'unfollow',
-            calldata: [accountAddress]
-        }]
-    });
-    return res;
+    return null;
 };
 
 export const getAllFollowing = async (address?: string) => {
@@ -110,7 +94,7 @@ export const getSessionToken = async ({ account }: any) => {
     if (token) {
         return token;
     } else {
-        const res = await axios.post('http://192.168.10.118:5000/getSessionToken', { account });
+        const res = await axios.post('http://101.132.135.175:5000/getSessionToken', { account });
         window.localStorage.setItem(key, res.headers['session-token'] || '');
         return res;
     }
@@ -126,7 +110,7 @@ interface IDoLeaveMessageProps {
 export const doLeaveMessage = async (data: IDoLeaveMessageProps) => {
     const { account } = data;
     const key = `${account},token`;
-    const res = await fetch('http://192.168.10.118:5000/app/leaveMessage', {
+    const res = await fetch('http://101.132.135.175:5000/app/leaveMessage', {
         method: 'POST',
         headers: {
             authorization: `Bearer ${window.localStorage.getItem(key) || ''}`,
@@ -147,7 +131,7 @@ interface IDoReadMessageProps {
 export const doReadMessage = async (data: IDoReadMessageProps) => {
     const { account } = data;
     const key = `${account},token`;
-    const res = await fetch('http://192.168.10.118:5000/app/userReadMessage', {
+    const res = await fetch('http://101.132.135.175:5000/app/userReadMessage', {
         method: 'POST',
         headers: {
             authorization: `Bearer ${window.localStorage.getItem(key) || ''}`,
@@ -169,7 +153,7 @@ interface IGetUserMessageProps {
 export const getUserMessages = async (data: IGetUserMessageProps) => {
     const { account } = data;
     const key = `${account},token`;
-    const response = await axios.post('http://192.168.10.118:5000/app/getUserMessages',
+    const response = await axios.post('http://101.132.135.175:5000/app/getUserMessages',
         { ...data },
         {
             headers: {
@@ -183,7 +167,7 @@ export const getUserMessages = async (data: IGetUserMessageProps) => {
 export const getUserDynamics = async (data: any) => {
     const { account } = data;
     const key = `${account},token`;
-    const response = await axios.post('http://192.168.10.118:5000/app/getUserDynamics',
+    const response = await axios.post('http://101.132.135.175:5000/app/getUserDynamics',
         { ...data },
         {
             headers: {
@@ -197,7 +181,7 @@ export const getUserDynamics = async (data: any) => {
 export const getDynamicTest = async (data: any) => {
     const { account } = data;
     const key = `${account},token`;
-    const response = await axios.post('http://192.168.10.118:5000/app/getDynamicTest',
+    const response = await axios.post('http://101.132.135.175:5000/app/getDynamicTest',
         { ...data },
         {
             headers: {
