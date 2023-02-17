@@ -11,13 +11,11 @@ import {
 //
 import AccountLayout from '@src/pages/layouts/account_layout';
 import { useFooterBar } from '@src/hooks/useFooterBar';
-import { useGetAccountInfo, IAccountInfoData } from '@src/hooks/useAccount';
 import { getSessionToken, getUserDynamics, getDynamicTest } from '@src/ui/account/accountSocal.service';
 import { useTokenBalanceToCurrencyValue } from '@argentx/packages/extension/src/ui/features/accountTokens/tokenPriceHooks';
 import { useSelectedAccount } from '@argentx/packages/extension/src/ui/features/accounts/accounts.state';
 import { normalizeAddress } from '@argentx/packages/extension/src/ui/services/addresses';
 import { swrCacheProvider } from '@argentx/packages/extension/src/ui/services/swr';
-import { useAccountTransactions } from '@argentx/packages/extension/src/ui/features/accounts/accountTransactions.state';
 
 const StyledBody = styled.div`
     min-height:320px;
@@ -59,14 +57,6 @@ const AccountHomeBody: FC<any> = ({ account }) => {
     const [isLoading, setIsLoading] = useState(false);
     useFooterBar('home');
     const [dynamicMessageList, setDynamicMessageList] = useState([]);
-    const [followedCount, setFollowedCount] = useState([account?.address]);
-    const [maxBlock, setMaxBlock] = useState('');
-    const { transactions, pendingTransactions } = useAccountTransactions(account);
-    // const storageKey = `${account?.address},guardians`;
-    // @ts-ignore
-    // const [localNameList] = useState<any[]>(JSON.parse(window.localStorage.getItem(storageKey)) || []);
-    // console.log('localNameList -----', localNameList);
-    const limit = 10;
 
     const initDynamicsList = async () => {
         console.log('123');
@@ -91,10 +81,6 @@ const AccountHomeBody: FC<any> = ({ account }) => {
             // initDynamicsList();
         });
     }, [accountAddress]);
-
-    const hasAddGuradiansTrans = [...transactions, ...pendingTransactions].some(item => {
-        return ['ACCEPTED_ON_L1', 'ACCEPTED_ON_L2'].includes(item.status) && item.meta?.title === 'Add guardians';
-    });
 
     return (
         <WindowWrapperCom loading={isLoading}>
@@ -128,7 +114,7 @@ const AccountHomeBody: FC<any> = ({ account }) => {
             </WindowWrapperCom.Head>
             <WindowWrapperCom.Body>
                 <StyledBody>
-                    {/* {!hasAddGuradiansTrans && <NoGuardiansTips />} */}
+                    <NoGuardiansTips />
                     <SocalRecoveryMessageListCom socalRecoveryMessageList={[1]} />
                     <MessageListCom dynamicMessageList={dynamicMessageList} />
                 </StyledBody>
