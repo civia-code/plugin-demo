@@ -7,13 +7,7 @@ import { approveAction, rejectAction } from '@argentx/packages/extension/src/ui/
 const { encodeShortString, decodeShortString } = shortString;
 
 export const getSigner = async ({ fromLocal = false, accountAddress }: any) => {
-    await sendMessage({
-        type: 'CIVIA_GET_SIGNER',
-        data: { fromLocal, accountAddress }
-    } as any);
-    const res = await waitForMessage('CIVIA_GET_SIGNER_RES' as any);
-    console.log(res);
-    return res;
+    return 1;
 };
 
 export const getGuardianSize = async (accountAddress: string | undefined = undefined) => {
@@ -98,37 +92,11 @@ export const changeGuardians = async (guardianLen: 3|5, guardians: Array<string>
 };
 
 export const changeGuardiansTrans = async (guardianLen: number, guardians: Array<string>, account: Account) => {
-    const res = await proxySendCombinedTransaction({
-        transactions: [{
-            contractAddress: account.address,
-            entrypoint: 'addGuardians',
-            calldata: [guardianLen, ...guardians]
-        }]
-    });
-    return res;
+    return null;
 };
 
 export const changeGuardiansTransAndApprove = async (guardianLen: number, guardians: Array<string>, account: Account) => {
-    const transactions = [{
-        contractAddress: account.address,
-        entrypoint: 'addGuardians',
-        calldata: [guardianLen, ...guardians]
-    }];
-
-    const action = await proxySendCombinedTransaction({ transactions });
-    await approveAction(action);
-    const result = await Promise.race([
-        waitForMessage(
-            'TRANSACTION_SUBMITTED',
-            ({ data }) => data.actionHash === action.meta.hash
-        ),
-        waitForMessage(
-            'TRANSACTION_FAILED',
-            ({ data }) => data.actionHash === action.meta.hash
-        )
-    ]);
-    console.log(result);
-    return result;
+    return null;
 };
 
 export const triggerEscapeOwner = async (data: { guardians: Array<string>; oldOwnerAddress: string, newOwner: string}) => {
