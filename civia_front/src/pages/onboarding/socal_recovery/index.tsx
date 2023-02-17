@@ -3,13 +3,13 @@ import { List, Footer, Button, Card, Toast } from 'antd-mobile';
 import { useNavigate, Navigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useInterval } from 'ahooks';
-import { number, shortString, Provider, GetTransactionResponse } from 'starknet';
+import { number, shortString } from 'starknet';
 
 import { ReactComponent as LogoIcon } from '@src/assets/icons/logo.svg';
 import { WindowWrapperCom, NavBarCom, AllUserList, LoadingCom } from '@src/pages/commponents';
 import PasswordCom from './components/password';
 
-import { getSessionToken, doLeaveMessage, getUserMessages, doReadMessage, getAllAccounts } from '@src/ui/account/accountSocal.service';
+import { doLeaveMessage, getAllAccounts } from '@src/ui/account/accountSocal.service';
 import { getSigner, addRecoveriedAddress, getGuardianSize } from '@src/ui/account/account.service';
 import { useLocalCache } from '@src/hooks/useAccount';
 
@@ -19,8 +19,6 @@ import { useArrayStorage } from '@argentx/packages/extension/src/shared/storage/
 import { WalletAccount } from '@argentx/packages/extension/src/shared/wallet.model';
 import { useSelectedAccount, useSelectedAccountStore } from '@argentx/packages/extension/src/ui/features/accounts/accounts.state';
 import { formatTruncatedAddress, normalizeAddress, isEqualAddress, isValidAddress, formatFullAddress } from '@argentx/packages/extension/src/ui/services/addresses';
-import { createAccount } from '@argentx/packages/extension/src/ui/features/accounts/accounts.service';
-import { useAppState } from '@argentx/packages/extension/src/ui/app.state';
 import { connectAccount } from '@argentx/packages/extension/src/ui/services/backgroundAccounts';
 import { isDeprecated } from '@argentx/packages/extension/src/shared/wallet.service';
 import { Account } from '@argentx/packages/extension/src/ui/features/accounts/Account';
@@ -72,8 +70,12 @@ const StyledList = styled(List)`
 `;
 
 const StyledCard = styled(Card)`
-    ::-webkit-scrollbar {
-        display: none;
+    .adm-card-body{
+        height: 220px;
+        overflow: scroll;
+        ::-webkit-scrollbar {
+            display: none;
+        }
     }
 `;
 
@@ -190,37 +192,7 @@ const SocalRecoveryBody: FC<any> = ({ account, mapedAccount }) => {
     //
     const handleSendRecoveryMessageClick = async () => {
         if (account) {
-            setIsLoading(true);
-            getSigner({ fromLocal: true }).then(res => {
-                if (res) {
-                    const data = {
-                        oldOwnerAddress: recoveryRadioValue,
-                        newOwnerPubKey: res,
-                        type: 98,
-                        tx: null
-                    };
-                    for (const guardian of guardiansCheckValue) {
-                        doLeaveMessage({
-                            account: account.address,
-                            from: account.address,
-                            to: guardian,
-                            title: 'Account recover request',
-                            content: JSON.stringify(data)
-                        }).then(() => {
-                            window.localStorage.setItem(storageKey, JSON.stringify([recoveryRadioValue, guardiansCheckValue]));
-                            setLocalNameList([recoveryRadioValue, guardiansCheckValue]);
-                        }).catch((e) => {
-                            Toast.show({ content: JSON.stringify(e) });
-                        });
-                    }
-                } else {
-                    return 'Unknow Error';
-                }
-            }).then(res => {
-                Toast.show({ content: 'Success' });
-            }).finally(() => {
-                setIsLoading(false);
-            });
+            //
         } else {
             //
         }
@@ -228,42 +200,9 @@ const SocalRecoveryBody: FC<any> = ({ account, mapedAccount }) => {
 
     const clearInterval = useInterval(async () => {
         console.log('wait messge');
-        if (accountAddress && localNameList[0].length >= 10) {
-            await getSessionToken({ account: accountAddress });
-            const msgList = await getUserMessages({
-                account: accountAddress,
-                limit: 10,
-                page_no: 1
-            }).then(res => {
-                const msgList = res.result.messages;
-                const uniqAddress: string[] = [];
-                const list = msgList.reduce((list: any[], item: any) => {
-                    if (uniqAddress.includes(item.from)) {
-                        //
-                    } else if (guardiansCheckValue.some(item2 => isEqualAddress(item2, item.from))) {
-                        uniqAddress.push(item.from);
-                        list.push({ ...item, content: (JSON.parse(item.content)), timestamp: new Date(item.timestamp).getTime() });
-                    }
-                    return list;
-                }, []).filter((item: any) => item.content.msgType === 99);
-                return list;
-            });
-            if (msgList.length) {
-                const { newOwnerPubKey } = msgList[0].content.res;
-                getSigner({ accountAddress: recoveryRadioValue }).then((res: any) => {
-                    if (res && Array.isArray(res) && isEqualAddress(res[0] as string, newOwnerPubKey)) {
-                        setIsRecoviried(true);
-                        clearInterval();
-                        msgList.forEach((msg: any) => {
-                            doReadMessage({ account: accountAddress, message_id: msg.message_id });
-                        });
-                    }
-                });
-            }
-        }
     }, 5e3);
 
-    const isValid = recoveryRadioValue && (guardiansCheckValue.length >= guardianSize);
+    const isValid = recoveryRadioValue && ((guardianSize === 1 && guardiansCheckValue.length >= 1) || (guardianSize === 3 && guardiansCheckValue.length >= 2));
 
     if (recoveriedAccount) {
         return <Navigate to='/account/home' />;
@@ -271,8 +210,8 @@ const SocalRecoveryBody: FC<any> = ({ account, mapedAccount }) => {
 
     return (
         <StyledBody>
-            <StyledList mode='card' header={'Account to recover'}>
-                <StyledCard style={{ height: 220, overflow: 'scroll' }}>
+            <StyledList mode='card'>
+                <StyledCard title='Account to recover'>
                     <AllUserList
                         gridType="listRadio"
                         list={allUserList}
@@ -286,8 +225,8 @@ const SocalRecoveryBody: FC<any> = ({ account, mapedAccount }) => {
                     />
                 </StyledCard>
             </StyledList>
-            <StyledList mode='card' header={'Guardians'}>
-                <StyledCard style={{ height: 220, overflow: 'scroll' }}>
+            <StyledList mode='card'>
+                <StyledCard title='Guardians'>
                     <AllUserList
                         gridType="listCheck"
                         list={allUserList}
@@ -297,7 +236,7 @@ const SocalRecoveryBody: FC<any> = ({ account, mapedAccount }) => {
                 </StyledCard>
             </StyledList>
             <StyledAcceptGroup>
-                <StyledAcceptButton block type='submit' color='primary' size='large' loadingText='creating' onClick={handleSendRecoveryMessageClick} disabled={!isValid || localNameList[0].length > 10}>Start recovery</StyledAcceptButton>
+                <StyledAcceptButton block type='submit' color='primary' size='large' loadingText='creating' onClick={handleSendRecoveryMessageClick} disabled={!isValid || localNameList[0].length > 10}>Submit recovery request</StyledAcceptButton>
             </StyledAcceptGroup>
             <LoadingCom visible={isLoading || isValidating || localNameList[0].length > 10} />
         </StyledBody>
