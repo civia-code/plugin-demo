@@ -4,7 +4,7 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       
       <link rel="stylesheet" href="./demo-flow.mm_files/katex.min.css">
-                
+      
       <script type="text/javascript" src="./demo-flow.mm_files/mermaid.min.js.download" charset="UTF-8"></script>
       
       
@@ -262,7 +262,7 @@ pre[data-line] .line-highlight[data-end]:after {
       <h1 class="mume-header" id="-civia-prototype-workflows-">Civia Prototype Workflows</h1>
 
 <ul>
-<li>The Network State Virtual Hackathon</li>
+<li>for The Network State Virtual Hackathon</li>
 </ul>
 <h2 class="mume-header" id="-1-account-creation-workflow-">1. Account creation workflow</h2>
 
@@ -333,7 +333,8 @@ pre[data-line] .line-highlight[data-end]:after {
     runNewChrome--&gt;installCivia((Install Civia&lt;br&gt; Chrome extension))
     installCivia--&gt;LoginPage[[Create account page]]
     LoginPage--&gt;clickSocialRecovery(Click &apos;Social Recovery&apos;)
-    clickSocialRecovery--&gt;SocialRecoveryPage[[Social Recovery page]]
+    clickSocialRecovery--&gt;setNewPassword(Create password for the new app installation)
+    setNewPassword--&gt;SocialRecoveryPage[[Social Recovery page]]
 
     SocialRecoveryPage--&gt;inputUserId(View the list of user accounts)
     inputUserId--&gt;clickUser(Select the user account to recover)
@@ -344,7 +345,7 @@ pre[data-line] .line-highlight[data-end]:after {
     clickGuardians--&gt;|Confirm 2 guardians selected|clickSubmit(Click &apos;Submit recovery request&apos;)
     clickSubmit--&gt;ProgressPage[[Check operation progress in Activities&lt;br&gt;Contact guardians offline to remind them of the recovery request they will see in their app]]
 
-    ProgressPage--&gt;|Wait for guardians to finish their signings|HomePageOwner[[Show the main page of the recovered account&lt;br&gt; with previous SBTs and followings]]
+    ProgressPage--&gt;|Wait for guardians to finish their signings|HomePageOwner[[Show the main page of the recovered account&lt;br&gt; with previous tokens and followings]]
     HomePageOwner--&gt;Done(((Done)))
 
 </div></center>
