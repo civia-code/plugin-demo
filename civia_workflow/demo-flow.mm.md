@@ -1,5 +1,5 @@
 # Civia Prototype Workflows
-- The Network State Virtual Hackathon
+- for The Network State Virtual Hackathon
 
 ## 1. Account creation workflow
 
@@ -88,7 +88,8 @@ flowchart TB
     runNewChrome-->installCivia((Install Civia<br> Chrome extension))
     installCivia-->LoginPage[[Create account page]]
     LoginPage-->clickSocialRecovery(Click 'Social Recovery')
-    clickSocialRecovery-->SocialRecoveryPage[[Social Recovery page]]
+    clickSocialRecovery-->setNewPassword(Create password for the new app installation)
+    setNewPassword-->SocialRecoveryPage[[Social Recovery page]]
 
     SocialRecoveryPage-->inputUserId(View the list of user accounts)
     inputUserId-->clickUser(Select the user account to recover)
@@ -99,7 +100,7 @@ flowchart TB
     clickGuardians-->|Confirm 2 guardians selected|clickSubmit(Click 'Submit recovery request')
     clickSubmit-->ProgressPage[[Check operation progress in Activities<br>Contact guardians offline to remind them of the recovery request they will see in their app]]
 
-    ProgressPage-->|Wait for guardians to finish their signings|HomePageOwner[[Show the main page of the recovered account<br> with previous SBTs and followings]]
+    ProgressPage-->|Wait for guardians to finish their signings|HomePageOwner[[Show the main page of the recovered account<br> with previous tokens and followings]]
     HomePageOwner-->Done(((Done)))
 
 ```
